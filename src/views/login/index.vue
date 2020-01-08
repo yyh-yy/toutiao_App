@@ -18,7 +18,22 @@
         placeholder="请输入6位验证码"
         >
         <i class="iconfont icon-mima" slot="left-icon"></i>
-            <van-button slot="button" size="small" type="primary">发送验证码</van-button>
+            <van-count-down
+             slot="button"
+             v-if="isCountDownShow"
+             :time=" 1000 * 60 "
+             format=" ss s"
+             @finish="isCountDownShow = false"
+              />
+            <van-button
+             v-else
+             slot="button"
+             size="small"
+             type="primary"
+             @click="onSendSmsCode"
+            >
+             发送验证码
+            </van-button>
       </van-field>
     </van-cell-group>
     <div class="btn">
@@ -28,7 +43,7 @@
 </template>
 
 <script>
-import { login } from '@/API/user'
+import { login, getSmsCode } from '@/API/user'
 // import { ValidationProvider } from 'vee-validate'
 export default {
   name: 'loginPage',
@@ -37,10 +52,11 @@ export default {
   data () {
     return {
       userName: {
-        mobile: '',
-        code: ''
+        mobile: '13911111111',
+        code: '246810'
 
-      }
+      },
+      isCountDownShow: false
     }
   },
   methods: {
@@ -59,6 +75,15 @@ export default {
         this.$toast.success('登录成功')
       } catch (err) {
         this.$toast.fail('手机号或验证码错误')
+      }
+    },
+    async onSendSmsCode () {
+      const { mobile } = this.userName
+      try {
+        this.isCountDownShow = true
+        await getSmsCode(mobile)
+      } catch (error) {
+        console.log(error)
       }
     }
   }
