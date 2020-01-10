@@ -100,6 +100,8 @@ export default {
       try {
         const res = await login(user)
         console.log(res)
+        // 把token储存到Vuex容器中
+        this.$store.commit('setUser', res.data.data)
 
         this.$toast.success('登录成功')
       } catch (err) {
