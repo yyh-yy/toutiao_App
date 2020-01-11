@@ -1,7 +1,43 @@
 import Vue from 'vue'
-import { Button, NavBar, Field, Toast, CountDown } from 'vant'
-Vue.use(Button) // 按钮
-Vue.use(NavBar) // 导航栏
-Vue.use(Field) // 输入框
-Vue.use(Toast) // 轻提示
-Vue.use(CountDown) // 倒计时
+
+// 加载
+import {
+  Button,
+  Cell,
+  CellGroup,
+  NavBar,
+  Field,
+  Toast,
+  CountDown,
+  Tabbar,
+  TabbarItem,
+  Image,
+  Grid,
+  GridItem,
+  Icon,
+  Dialog,
+  Tab,
+  Tabs,
+  List,
+  PullRefresh
+} from 'vant'
+
+// 注册
+Vue.use(Button)
+  .use(Cell)
+  .use(CellGroup)
+  .use(NavBar)
+  .use(Field)
+  .use(Toast)
+  .use(CountDown)
+  .use(Tabbar)
+  .use(TabbarItem)
+  .use(Image)
+  .use(Grid)
+  .use(GridItem)
+  .use(Icon)
+  .use(Dialog)
+  .use(Tab)
+  .use(Tabs)
+  .use(List)
+  .use(PullRefresh)

@@ -104,6 +104,7 @@ export default {
         this.$store.commit('setUser', res.data.data)
 
         this.$toast.success('登录成功')
+        this.$router.push('/')
       } catch (err) {
         this.$toast.fail('手机号或验证码错误')
       }
