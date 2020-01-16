@@ -6,6 +6,7 @@ body {
   height: 64px;
   line-height: 64px;
 }
-.van-nav-bar .van-nav-bar__title {
+.van-nav-bar .van-nav-bar__title,
+.van-nav-bar .van-icon {
   color: #fff;
 }
