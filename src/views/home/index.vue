@@ -43,7 +43,14 @@
      closeable
      close-icon-position="top-left"
      :style="{ height: '85%' }"
-     ></van-popup>
+     >
+     <channel-edit
+     :user-channels="userChannels"
+     v-model="active"
+     @close="isChannelEditShow=false"
+     />
+
+     </van-popup>
 
   </div>
 </template>
@@ -51,10 +58,12 @@
 <script>
 import { getUserChannels } from '@/API/user'
 import ArticleList from './components/article-list'
+import ChannelEdit from './components/channel-edit'
 export default {
   name: 'HomePage',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   props: {},
   data () {
@@ -62,7 +71,7 @@ export default {
       active: 0,
       value: '',
       userChannels: [],
-      isChannelEditShow: true
+      isChannelEditShow: false
     }
   },
   computed: {
@@ -74,6 +83,8 @@ export default {
   },
   mounted () {},
   methods: {
+    // 关闭弹窗
+
     async getUserChannels () {
       const { data } = await getUserChannels()
       this.userChannels = data.data.channels
