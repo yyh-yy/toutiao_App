@@ -10,20 +10,22 @@
         @search="onSearch"
         @cancel="onCancel"
         @focus="isResultShow=false"
+        @input="onSearchInput"
 
       />
     </form>
     <!-- /搜索栏 -->
     <!-- 搜索结果 -->
-    <search-result v-if="isResultShow"/>
+    <search-result v-if="isResultShow" :q="searchText"/>
     <!-- 联想建议 -->
     <van-cell-group v-else-if="searchText">
-      <van-cell icon="search" title="单元格" />
-      <van-cell icon="search" title="单元格" />
-      <van-cell icon="search" title="单元格" />
-      <van-cell icon="search" title="单元格" />
-      <van-cell icon="search" title="单元格" />
-      <van-cell icon="search" title="单元格" />
+      <van-cell
+       icon="search"
+       v-for="(item,index) in suggestion"
+       :key="index"
+       @click="onSuggestionClick(item)">
+       <div slot="title" v-html="heightLight(item)"></div>
+      </van-cell>
     </van-cell-group>
     <!-- /联想建议 -->
 
@@ -62,6 +64,7 @@
 <script>
 import SearchResult from './components/search-result'
 import { getSuggestions } from '@/API/search'
+import { debounce } from 'lodash'
 export default {
   name: 'SearchPage',
   components: {
@@ -80,16 +83,26 @@ export default {
   created () {},
   mounted () {},
   methods: {
+    onSuggestionClick (str) {
+      this.searchText = str
+      this.isResultShow = true
+    },
     onSearch () {
       this.isResultShow = true
     },
-    async onSearchInput () {
+    // 处理防抖
+    onSearchInput: debounce(async function () {
       const searchText = this.searchText
       if (!searchText) {
         return
       }
       const { data } = await getSuggestions(searchText)
+      console.log(data)
+
       this.suggestion = data.data.options
+    }, 200),
+    heightLight (str) {
+      return str.replace(this.searchText, `<span style="color:red;">${this.searchText}</span>`)
     },
     onCancel () {
       console.log('onCancel')
