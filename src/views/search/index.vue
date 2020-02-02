@@ -8,7 +8,7 @@
         show-action
         background="#3296fa"
         @search="onSearch"
-        @cancel="onCancel"
+        @cancel="$router.back()"
         @focus="isResultShow=false"
         @input="onSearchInput"
 
@@ -33,26 +33,22 @@
 
     <van-cell-group v-else>
       <van-cell title="历史记录">
-      <van-icon name="delete" />
-      <span>全部删除</span>
-      &nbsp;&nbsp;
-      <span>完成</span>
+        <template v-if="isDeleteShow">
+          <span @click="searchHistories=[]">全部删除</span>
+          &nbsp;&nbsp;
+          <span @click="isDeleteShow=false">完成</span>
+        </template>
+      <van-icon name="delete" v-else @click="isDeleteShow=true"/>
+
     </van-cell>
-      <van-cell title="单元格">
-        <van-icon name="close"></van-icon>
-      </van-cell>
-      <van-cell title="单元格">
-        <van-icon name="close"></van-icon>
-      </van-cell>
-      <van-cell title="单元格">
-        <van-icon name="close"></van-icon>
-      </van-cell>
-      <van-cell title="单元格">
-        <van-icon name="close"></van-icon>
-      </van-cell>
-      <van-cell title="单元格">
-        <van-icon name="close"></van-icon>
-      </van-cell>
+      <van-cell
+       v-for="(item,index) in searchHistories"
+       :key="index"
+       :title="item"
+       @click="onHistoryClick(item,index)">
+       <van-icon v-show="isDeleteShow" name="close"></van-icon>
+       </van-cell>
+
     </van-cell-group>
     <!-- /历史记录 -->
 
@@ -73,9 +69,11 @@ export default {
   props: {},
   data () {
     return {
+      searchHistories: [], // 搜索历史记录
       isResultShow: false,
       searchText: '',
-      suggestion: []
+      suggestion: [],
+      isDeleteShow: false
     }
   },
   computed: {},
@@ -83,12 +81,24 @@ export default {
   created () {},
   mounted () {},
   methods: {
+    onHistoryClick (item, index) {
+      if (this.isDeleteShow) {
+        this.searchHistories.splice(index, 1)
+      } else {
+        this.onSearch(item)
+      }
+    },
     onSuggestionClick (str) {
       this.searchText = str
       this.isResultShow = true
     },
     onSearch () {
+      const index = this.searchHistories.indexOf(this.searchText)
+      if (index !== -1) {
+        this.searchHistories.splice(index, 1)
+      }
       this.isResultShow = true
+      this.searchHistories.unshift(this.searchText)
     },
     // 处理防抖
     onSearchInput: debounce(async function () {

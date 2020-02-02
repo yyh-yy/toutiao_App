@@ -5,6 +5,13 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/article/:articleId',
+    name: 'article',
+    component: () => import('@/views/article'),
+    props: true
+
+  },
+  {
     path: '/search',
     component: () => import('@/views/search')
   }, {
