@@ -10,6 +10,8 @@
      v-for="(article, index) in list"
       :key="index"
       :title="article.title"
+      @click="$router.push('/article/' + article.art_id)"
+
     />
   </van-list>
 </van-pull-refresh>
@@ -42,6 +44,7 @@ export default {
   created () {},
   mounted () {},
   methods: {
+
     async onLoad () {
       // 1. 请求获取数据
       const { data } = await getArticles({

@@ -1,66 +1,69 @@
 <template>
   <div class="search-container">
     <!-- 搜索栏 -->
-    <form action="/" class="search-form">
+    <form class="search-form" action="/">
       <van-search
+        background="#3296fa"
         v-model="searchText"
         placeholder="请输入搜索关键词"
         show-action
-        background="#3296fa"
-        @search="onSearch"
+        @search="onSearch(searchText)"
         @cancel="$router.back()"
-        @focus="isResultShow=false"
+        @focus="isResultShow = false"
         @input="onSearchInput"
-
       />
     </form>
     <!-- /搜索栏 -->
+
     <!-- 搜索结果 -->
-    <search-result v-if="isResultShow" :q="searchText"/>
+    <search-result v-if="isResultShow" :q="searchText" />
+    <!-- /搜索结果 -->
+
     <!-- 联想建议 -->
     <van-cell-group v-else-if="searchText">
       <van-cell
-       icon="search"
-       v-for="(item,index) in suggestion"
-       :key="index"
-       @click="onSuggestionClick(item)">
-       <div slot="title" v-html="heightLight(item)"></div>
+        icon="search"
+        :key="index"
+        v-for="(item, index) in suggestions"
+        @click="onSearch(item)"
+      >
+        <div slot="title" v-html="highlight(item)"></div>
       </van-cell>
     </van-cell-group>
     <!-- /联想建议 -->
 
     <!-- 历史记录 -->
-
     <van-cell-group v-else>
       <van-cell title="历史记录">
         <template v-if="isDeleteShow">
-          <span @click="searchHistories=[]">全部删除</span>
+          <span @click="searchHistories = []">全部删除</span>
           &nbsp;&nbsp;
-          <span @click="isDeleteShow=false">完成</span>
+          <span @click="isDeleteShow = false">完成</span>
         </template>
-      <van-icon name="delete" v-else @click="isDeleteShow=true"/>
-
-    </van-cell>
+        <van-icon v-else name="delete" @click="isDeleteShow = true"></van-icon>
+      </van-cell>
       <van-cell
-       v-for="(item,index) in searchHistories"
-       :key="index"
-       :title="item"
-       @click="onHistoryClick(item,index)">
-       <van-icon v-show="isDeleteShow" name="close"></van-icon>
-       </van-cell>
-
+        :title="item"
+        v-for="(item, index) in searchHistories"
+        :key="index"
+        @click="onHistoryClick(item, index)"
+      >
+        <van-icon
+          v-show="isDeleteShow"
+          name="close"
+        ></van-icon>
+      </van-cell>
     </van-cell-group>
     <!-- /历史记录 -->
-
-    <!-- 搜索结果 -->
-
   </div>
 </template>
 
 <script>
 import SearchResult from './components/search-result'
 import { getSuggestions } from '@/API/search'
+import { getItem, setItem } from '@/utils/storage'
 import { debounce } from 'lodash'
+
 export default {
   name: 'SearchPage',
   components: {
@@ -69,69 +72,62 @@ export default {
   props: {},
   data () {
     return {
-      searchHistories: [], // 搜索历史记录
-      isResultShow: false,
-      searchText: '',
-      suggestion: [],
-      isDeleteShow: false
+      searchText: '', // 搜索框内容
+      isResultShow: false, // 搜索结果的显示状态
+      suggestions: [], // 联想建议
+      searchHistories: getItem('search-histories') || [], // 搜索历史记录
+      isDeleteShow: false // 删除的显示状态
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    searchHistories (newVal) {
+      setItem('search-histories', newVal)
+    }
+  },
   created () {},
   mounted () {},
   methods: {
-    onHistoryClick (item, index) {
-      if (this.isDeleteShow) {
-        this.searchHistories.splice(index, 1)
-      } else {
-        this.onSearch(item)
-      }
-    },
-    onSuggestionClick (str) {
-      this.searchText = str
-      this.isResultShow = true
-    },
-    onSearch () {
+    onSearch (q) {
+      // q: 文本框数据本身、联想建议文本、历史记录文本
+      // 1. 修改搜索框的文本内容
+      this.searchText = q
+
+      // 2. 记录搜索历史记录
       const index = this.searchHistories.indexOf(this.searchText)
       if (index !== -1) {
         this.searchHistories.splice(index, 1)
       }
-      this.isResultShow = true
       this.searchHistories.unshift(this.searchText)
+
+      // 3. 展示搜索结果
+      this.isResultShow = true
     },
-    // 处理防抖
+
     onSearchInput: debounce(async function () {
       const searchText = this.searchText
       if (!searchText) {
         return
       }
       const { data } = await getSuggestions(searchText)
-      console.log(data)
+      this.suggestions = data.data.options
+    }, 300),
 
-      this.suggestion = data.data.options
-    }, 200),
-    heightLight (str) {
-      return str.replace(this.searchText, `<span style="color:red;">${this.searchText}</span>`)
+    highlight (str) {
+      return str.toLowerCase().replace(
+        this.searchText.toLowerCase(),
+        `<span style="color: red;">${this.searchText}</span>`
+      )
     },
-    onCancel () {
-      console.log('onCancel')
-    },
 
-    onLoad () {
-      // 异步更新数据
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
-        // 加载状态结束
-        this.loading = false
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
-        }
-      }, 500)
+    onHistoryClick (item, index) {
+      if (this.isDeleteShow) {
+        // 删除操作
+        this.searchHistories.splice(index, 1)
+      } else {
+        // 展示搜索结果
+        this.onSearch(item)
+      }
     }
   }
 }

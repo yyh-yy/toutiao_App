@@ -21,7 +21,11 @@ import {
   List,
   PullRefresh,
   Search,
-  Popup
+  Popup,
+  Loading,
+  divider,
+  ActionSheet,
+  DatetimePicker
 } from 'vant'
 
 // 注册
@@ -45,3 +49,7 @@ Vue.use(Button)
   .use(PullRefresh)
   .use(Search)
   .use(Popup)
+  .use(Loading)
+  .use(divider)
+  .use(ActionSheet)
+  .use(DatetimePicker)

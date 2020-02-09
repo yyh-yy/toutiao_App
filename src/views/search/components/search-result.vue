@@ -1,4 +1,4 @@
-a<template>
+<template>
   <van-list
     v-model="loading"
     :finished="finished"
@@ -9,6 +9,7 @@ a<template>
       v-for="(article, index) in list"
       :key="index"
       :title="article.title"
+      @click="$router.push('/article/' + article.art_id)"
 
     />
   </van-list>

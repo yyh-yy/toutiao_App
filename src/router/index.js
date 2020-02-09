@@ -5,6 +5,11 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/user/profile',
+    name: 'user-profile',
+    component: () => import('@/views/user-profile')
+  },
+  {
     path: '/article/:articleId',
     name: 'article',
     component: () => import('@/views/article'),
