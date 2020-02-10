@@ -5,6 +5,19 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/my-article/:type?',
+    component: () => import('@/views/user-article'),
+    props: true
+  },
+  // {
+  //   path: '/my-article/collect',
+  //   component: () => import('@/views/user-article')
+  // },
+  // {
+  //   path: '/my-article/history',
+  //   component: () => import('@/views/user-article')
+  // },
+  {
     path: '/user/profile',
     name: 'user-profile',
     component: () => import('@/views/user-profile')

@@ -56,3 +56,29 @@ export const delLike = articleId => {
     url: `/app/v1_0/article/likings/${articleId}`
   })
 }
+// 获取用户文章列表
+
+export const getCurrentUserArticles = params => {
+  return request({
+    method: 'GET',
+    url: `/app/v1_0/user/articles`,
+    params
+  })
+}
+// 获取用户收藏文章列表
+export const getCollectArticles = params => {
+  return request({
+    method: 'GET',
+    url: `/app/v1_0/article/collections`,
+    params
+  })
+}
+// 获取用户文历史列表
+
+export const getHistoryArticles = params => {
+  return request({
+    method: 'GET',
+    url: `/app/v1_0/user/histories`,
+    params
+  })
+}
