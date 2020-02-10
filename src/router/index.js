@@ -5,6 +5,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/user/chat',
+    component: () => import('@/views/user-chat')
+  },
+  {
     path: '/my-article/:type?',
     component: () => import('@/views/user-article'),
     props: true
