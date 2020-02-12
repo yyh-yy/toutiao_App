@@ -13,9 +13,9 @@
     <div class="message-list" ref="message-list">
       <div
         class="message-item"
-        :class="{ reverse: item % 3 === 0 }"
-        v-for="item in 20"
-        :key="item"
+        :class="{ reverse: item.isMe}"
+        v-for="(item,index) in messages"
+        :key="index"
       >
         <van-image
           class="avatar"
@@ -26,7 +26,7 @@
           src="https://img.yzcdn.cn/vant/cat.jpeg"
         />
         <div class="title">
-          <span>{{ `hello${item}` }}</span>
+          <span>{{ item.msg }}</span>
         </div>
       </div>
     </div>
@@ -34,8 +34,13 @@
 
     <!-- 发送消息 -->
     <van-cell-group class="send-message">
-      <van-field v-model="message" center clearable>
-        <van-button slot="button" size="small" type="primary">发送</van-button>
+      <van-field v-model.trim="message" center clearable>
+        <van-button
+         slot="button"
+         size="small"
+         type="primary"
+         @click="onSend"
+         >发送</van-button>
       </van-field>
     </van-cell-group>
     <!-- /发送消息 -->
@@ -43,11 +48,62 @@
 </template>
 
 <script>
+import io from 'socket.io-client'
+import { getItem, setItem } from '@/utils/storage'
 export default {
   name: 'UserChat',
   data () {
     return {
-      message: ''
+      message: '',
+      scoket: null,
+      messages: getItem('chat-messages') || [] // 消息列表
+    }
+  },
+  watch: {
+    messages (newValue) {
+      setItem('chat-messages', newValue)
+
+      const messageList = this.$refs['message-list']
+
+      this.$nextTick(() => {
+        messageList.scrollTop = messageList.scrollHeight
+      })
+    }
+  },
+  created () {
+    const socket = io('http://ttapi.research.itcast.cn')
+    this.socket = socket
+    socket.on('connect', function () {
+      console.log('建立连接')
+    })
+    // 发送消息
+    socket.emit()
+
+    // 接收消息
+    socket.on('message', message => {
+    //   console.log('收到服务消息', message)
+      this.messages.push(message)
+    })
+  },
+  mounted () {
+
+  },
+  methods: {
+    onSend () {
+      const message = this.message
+      if (!message.length) {
+        return
+      }
+      const data = {
+        msg: message,
+        timestamp: Date.now(),
+        isMe: true // 自己发的
+      }
+      this.socket.emit('message', data)
+
+      this.messages.push(data)
+
+      this.message = ''
     }
   }
 }
