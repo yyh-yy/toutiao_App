@@ -37,6 +37,14 @@ import UserArticle from './components/articles'
 import UserCollect from './components/collect'
 import UserHistory from './components/history'
 export default {
+  beforeRouteLeave (to, from, next) {
+    if (to.name === 'article') {
+      this.$store.commit('addCachePage', 'UserArticles')
+    } else {
+      this.$store.commit('removeCachePage', 'UserArticles')
+    }
+    next()
+  },
   name: 'UserArticles',
   components: {
     UserArticle,

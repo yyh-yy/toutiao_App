@@ -6,7 +6,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: getItem('user')
+    user: getItem('user'),
+    cachePages: ['TabBar']
   },
   mutations: {
     setUser (state, data) {
@@ -17,6 +18,17 @@ export default new Vuex.Store({
       state.user = data
 
       setItem('user', state.user)
+    },
+    addCachePage (state, name) {
+      if (!state.cachePages.includes(name)) {
+        state.cachePages.push(name)
+      }
+    },
+    removeCachePage (state, name) {
+      const index = state.cachePages.indexOf(name)
+      if (index !== -1) {
+        state.cachePages.splice(index)
+      }
     }
   },
   actions: {
